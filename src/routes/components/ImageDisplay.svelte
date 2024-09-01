@@ -27,11 +27,13 @@
 </script>
 
 <div 
-  role="img"
+  role="button"
+  tabindex={0}
   class="relative flex flex-col items-center bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl"
   on:mouseenter={() => hovering = true}
   on:mouseleave={() => hovering = false}
   on:click={handleImageClick}
+  on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && handleImageClick()}
 >
   <div class="w-full h-64 sm:h-80 md:h-96 relative">
     {#if imageLoaded}
