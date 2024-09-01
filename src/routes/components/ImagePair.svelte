@@ -67,9 +67,6 @@
 
 export let images: Image[] = [];
 
-function handleSelect(isAI: boolean) {
-    dispatch('selection', { isAI });
-  }
 
   function shuffleArray(array: any[]) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -80,31 +77,42 @@ function handleSelect(isAI: boolean) {
   }
 
   $: shuffledImages = shuffleArray([...images]);
+
+  function handleSelection(isAI: boolean) {
+    dispatch('selection', { isAI });
+  }
 </script>
 
 <div class="flex flex-col items-center space-y-4">
-    <Button
-      text={gameStarted ? 'Next' : 'Start Game'}
-      disabled={loading}
-      loading={loading}
-      on:click={gameStarted ? fetchImages : startGame}
-    />
-  
-    <ErrorMessage message={error || ''} />
-  
-    {#if loading}
-      <LoadingSpinner />
-    {:else if shuffledImages.length > 0}
-      <div class="flex space-x-4">
-        {#each shuffledImages as image}
+  <Button
+    text={gameStarted ? 'Next' : 'Start Game'}
+    disabled={loading}
+    loading={loading}
+    on:click={gameStarted ? fetchImages : startGame}
+  />
+
+  <ErrorMessage message={error || ''} />
+
+  {#if loading}
+    <LoadingSpinner />
+  {:else if shuffledImages.length > 0}
+    <div class="flex space-x-4">
+      {#each shuffledImages as image, index}
+        <div class="flex flex-col items-center">
+          <div class=" w-64 h-64 mb-20">
           <ImageDisplay
             src={image.src}
             alt={image.description || 'Image'}
-            isAI={image.isAI}
-            on:select={event => handleSelect(event.detail)}
           />
-        {/each}
-      </div>
-    {/if}
-
-  </div>
+        </div>
+          <button
+            class="bg-blue-500 flex text-white px-6 py-3 rounded-md font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 hover:bg-blue-600 mt-20 mb-5"
+            on:click={() => handleSelection(image.isAI)}
+          >
+            Auswählen
+          </button>
+        </div>
+      {/each}
+    </div>
+  {/if}
+</div>

@@ -3,9 +3,11 @@ import { imageCache } from '$lib/imageStore';
 
 
 interface UnsplashImage {
-    urls: { regular: string };
+    urls: { regular: string, raw: string };
     description: string;
     alt_description: string;
+    width: number;
+    height: number;
 }
 
 interface Image {
@@ -13,8 +15,6 @@ interface Image {
     isAI: boolean;
     description?: string;
 }
-
-
 
 async function fetchUnsplashImageWithKey(): Promise<UnsplashImage> {
     const response = await fetch(`${VITE_REAL_IMAGE_API_URL}`, {
@@ -27,14 +27,14 @@ async function fetchUnsplashImageWithKey(): Promise<UnsplashImage> {
     return response.json();
 }
 
-async function generateAIImageWithKey(prompt: string): Promise<string> {
+async function generateAIImageWithKey(prompt: string) : Promise<string> {
     const response = await fetch(`${VITE_AI_IMAGE_API_URL}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${VITE_AI_IMAGE_API_KEY}`
         },
-        body: JSON.stringify({ prompt, n: 1, size: "512x512" })
+        body: JSON.stringify({ prompt, n: 1, size: "512x512"})
     });
     if (!response.ok) {
         const errorMessage = await response.text();
@@ -47,12 +47,16 @@ async function generateAIImageWithKey(prompt: string): Promise<string> {
 async function fetchImagePairWithKeys(): Promise<Image[]> {
     const unsplashImage = await fetchUnsplashImageWithKey();
     const description = unsplashImage.description || unsplashImage.alt_description || "A random image";
+
+    const baseUrl = unsplashImage.urls.raw;
+    const scaledImageUrl = `${baseUrl}?fm=jpg&w=512&h=512&fit=crop`;
+
     const aiImageUrl = await generateAIImageWithKey(description);
 
     const unsplashId = Math.random().toString(36).substr(2, 9);
     const aiImageId = Math.random().toString(36).substr(2, 9);
 
-    imageCache.set(unsplashId, unsplashImage.urls.regular);
+    imageCache.set(unsplashId, scaledImageUrl);
     imageCache.set(aiImageId, aiImageUrl);
 
     console.log('Unsplash Image URL:', unsplashImage.urls.regular);
