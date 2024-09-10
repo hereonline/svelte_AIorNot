@@ -23,7 +23,7 @@
 
 <header class="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-4 shadow-md">
   <div class="container mx-auto flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Header</h1>
+    <h1 class="text-2xl font-bold">AI or Not AI</h1>
     <button 
       on:click={toggleDarkMode}
       class="p-2 text-white hover:text-purple-200 transition-colors duration-200"

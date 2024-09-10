@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, createEventDispatcher } from 'svelte';
+    import { createEventDispatcher } from 'svelte';
     import Button from './Button.svelte';
     import LoadingSpinner from './LoadingSpinner.svelte';
     import ImageDisplay from './ImageDisplay.svelte';
@@ -113,14 +113,14 @@ export let images: Image[] = [];
     <div class="flex space-x-4">
       {#each shuffledImages as image, index}
         <div class="flex flex-col items-center">
-          <div class=" w-64 h-64 mb-20">
-          <ImageDisplay
+          <div class="w-64 sm:w-80 md:w-96 lg:w-128 ">
+            <ImageDisplay
             src={image.src}
             alt={image.description || 'Image'}
           />
         </div>
         <button
-        class="mt-20 mb-10 px-6 py-3 rounded-md font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 {
+        class="mt-5 md:mt-10 mb-10 px-6 py-3 rounded-md font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 {
           lastSelection === 'correct' && image.isAI
             ? 'bg-green-500 text-white hover:bg-green-600'
             : lastSelection === 'incorrect' && !image.isAI
@@ -139,7 +139,7 @@ export let images: Image[] = [];
         {:else if lastSelection === 'incorrect' && !image.isAI}
           Wrong
         {:else}
-          Auswählen
+          Select
         {/if}
       </button>
         </div>

@@ -5,7 +5,6 @@
   import ModalPicture from './ModalPicture.svelte'
 
 
-
   export let src: string;
   export let alt: string;
 
