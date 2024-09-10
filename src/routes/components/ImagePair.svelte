@@ -21,6 +21,7 @@
     let error: string | null = null;
     let gameStarted = false;
 
+
     async function fetchImages(): Promise<void> {
         loading = true;
         error = null;
@@ -78,8 +79,20 @@ export let images: Image[] = [];
 
   $: shuffledImages = shuffleArray([...images]);
 
+  let canSelectImage = true; // Neue Variable zum Verfolgen, ob eine Auswahl möglich ist
+  let lastSelection: 'correct' | 'incorrect' | null = null;
+
   function handleSelection(isAI: boolean) {
-    dispatch('selection', { isAI });
+    if (canSelectImage) { // Überprüfen, ob eine Auswahl möglich ist
+      const isCorrect = isAI === images[1]?.isAI;
+      lastSelection = isCorrect ? 'correct' : 'incorrect';
+      dispatch('selection', { isAI });
+      canSelectImage = false; // Auswahl deaktivieren, nachdem eine Auswahl getroffen wurde
+    }
+  }
+  function resetButtons() {
+    canSelectImage = true;
+    lastSelection = null;
   }
 </script>
 
@@ -89,6 +102,7 @@ export let images: Image[] = [];
     disabled={loading}
     loading={loading}
     on:click={gameStarted ? fetchImages : startGame}
+    on:click={() => resetButtons()}
   />
 
   <ErrorMessage message={error || ''} />
@@ -105,12 +119,29 @@ export let images: Image[] = [];
             alt={image.description || 'Image'}
           />
         </div>
-          <button
-            class="bg-blue-500 flex text-white px-6 py-3 rounded-md font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 hover:bg-blue-600 mt-20 mb-5"
-            on:click={() => handleSelection(image.isAI)}
-          >
-            Auswählen
-          </button>
+        <button
+        class="mt-20 mb-10 px-6 py-3 rounded-md font-semibold shadow-lg transition-all duration-200 ease-in-out transform hover:scale-105 {
+          lastSelection === 'correct' && image.isAI
+            ? 'bg-green-500 text-white hover:bg-green-600'
+            : lastSelection === 'incorrect' && !image.isAI
+            ? 'bg-red-500 text-white hover:bg-red-600'
+            : lastSelection === 'correct' && !image.isAI
+            ? 'bg-gray-500 text-white hover:bg-gray-600'
+            : lastSelection === 'incorrect' && image.isAI
+            ? 'bg-gray-500 text-white hover:bg-gray-600'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+        }"
+        on:click={() => handleSelection(image.isAI)}
+        disabled={!canSelectImage}
+      >
+        {#if lastSelection === 'correct' && image.isAI}
+          Right
+        {:else if lastSelection === 'incorrect' && !image.isAI}
+          Wrong
+        {:else}
+          Auswählen
+        {/if}
+      </button>
         </div>
       {/each}
     </div>

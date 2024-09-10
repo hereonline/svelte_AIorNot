@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount } from 'svelte';
   import ImagePair from './components/ImagePair.svelte';
   import ScoreCounter from './components/ScoreCounter.svelte';
 
@@ -6,7 +7,19 @@
   let highScore = 0;
   let totalGames = 0;
 
+  onMount(() => {
 
+    const storedHighScore = localStorage.getItem('highScore');
+    const storedTotalGames = localStorage.getItem('totalGames');
+
+    if (storedHighScore) {
+      highScore = parseInt(storedHighScore, 10);
+    }
+
+    if (storedTotalGames) {
+      totalGames = parseInt(storedTotalGames, 10);
+    }
+  });
   interface Image {
     id: string;
     src: string;
@@ -27,7 +40,12 @@
     if (isCorrect) {
       score += 1;
     } else {
+      highScore = Math.max(highScore, score);
+            // Store updated highScore and totalGames in localStorage
+      localStorage.setItem('highScore', highScore.toString());
+      localStorage.setItem('totalGames', (totalGames + 1).toString());
       score = 0;
+      totalGames += 1;
     }
   }
 
